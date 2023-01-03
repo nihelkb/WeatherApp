@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">WeatherApp</string>
+    <string name="introduce_ciudad">introduce_ciudad</string>
+    <string name="lupa">lupa</string>
+    <string name="introduzca_una_ciudad">Introduzca una ciudad</string>
+    <string name="nublado">Nublado</string>
+    <string name="_31_c">31ºC</string>
 </resources>
