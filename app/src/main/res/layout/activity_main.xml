@@ -14,7 +14,7 @@
 
         <LinearLayout
             android:id="@+id/linearLayout"
-            android:layout_width="375dp"
+            android:layout_width="0dp"
             android:layout_height="53dp"
             android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -38,8 +38,8 @@
             android:layout_height="32dp"
             android:layout_marginTop="20dp"
             android:gravity="center"
-            android:text="Ciudad"
-            android:textSize="25dp"
+            android:text="@string/ciudad"
+            android:textSize="25sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
@@ -49,9 +49,9 @@
             android:layout_width="284dp"
             android:layout_height="136dp"
             android:layout_marginTop="20dp"
-            android:gravity="center"
+            android:gravity="center|fill_vertical"
             android:text="@string/_31_c"
-            android:textSize="100dp"
+            android:textSize="100sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.495"
             app:layout_constraintStart_toStartOf="parent"
@@ -63,11 +63,13 @@
             android:layout_width="268dp"
             android:layout_height="261dp"
             android:layout_marginTop="80dp"
+            android:contentDescription="@string/icono_tiempo"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.496"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/city"
-            app:srcCompat="@drawable/nublado" />
+            app:srcCompat="@drawable/nublado"
+            tools:ignore="ImageContrastCheck" />
 
         <TextView
             android:id="@+id/condicion"
@@ -82,16 +84,16 @@
 
         <TextView
             android:id="@+id/bienvenida"
-            android:layout_width="279dp"
-            android:layout_height="36dp"
+            android:layout_width="286dp"
+            android:layout_height="25dp"
             android:layout_above="@+id/recyclerview"
-            android:layout_marginEnd="76dp"
-            android:text="El tiempo de hoy"
+            android:text="@string/el_tiempo_de_hoy"
 
 
-            android:textSize="18dp"
+            android:textSize="18sp"
             app:layout_constraintBottom_toTopOf="@+id/recyclerview"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/temp"
             app:layout_constraintVertical_bias="0.794" />
 
@@ -100,14 +102,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_marginStart="36dp"
+            android:layout_marginStart="64dp"
             android:layout_marginTop="33dp"
             android:orientation="horizontal"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/temp"
-            app:layout_constraintVertical_bias="0.675">
+            app:layout_constraintVertical_bias="0.423">
 
         </androidx.recyclerview.widget.RecyclerView>
 
