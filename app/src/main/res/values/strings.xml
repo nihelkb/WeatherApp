@@ -6,4 +6,7 @@
     <string name="nublado">Nublado</string>
     <string name="_31_c">31ºC</string>
     <string name="tiempo">tiempo</string>
+    <string name="el_tiempo_de_hoy">El tiempo de hoy</string>
+    <string name="ciudad">Ciudad</string>
+    <string name="icono_tiempo">icono tiempo</string>
 </resources>
