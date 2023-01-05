@@ -18,12 +18,13 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class ListaHorasAdaptador extends RecyclerView.Adapter<ListaHorasAdaptador.ViewHolder> {
     private Context contexto;
-    private ArrayList<ListaHorasModelo> listaModelo;
+    private List<ListaHorasModelo> listaModelo;
 
-    public ListaHorasAdaptador(Context contexto, ArrayList<ListaHorasModelo> listaModelo) {
+    public ListaHorasAdaptador(Context contexto, List<ListaHorasModelo> listaModelo) {
         this.contexto = contexto;
         this.listaModelo = listaModelo;
     }

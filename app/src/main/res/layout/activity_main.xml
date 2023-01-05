@@ -21,15 +21,15 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.076">
+            app:layout_constraintVertical_bias="0.025">
 
             <SearchView
+                android:id="@+id/busqueda"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:iconifiedByDefault="false"
-                android:queryHint="Introduzca una ciudad"
+                android:queryHint="Introduzca una ciudad" />
 
-                />
         </LinearLayout>
 
         <TextView
@@ -39,34 +39,21 @@
             android:layout_marginTop="20dp"
             android:gravity="center"
             android:text="Ciudad"
-            android:textSize="20dp"
+            android:textSize="25dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
         <TextView
-            android:id="@+id/condicion"
-            android:layout_width="148dp"
-            android:layout_height="25dp"
-            android:layout_marginTop="289dp"
-            android:gravity="center"
-            android:text="@string/nublado"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.501"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/fotoTiempo"
-            app:layout_constraintVertical_bias="0.004" />
-
-        <TextView
             android:id="@+id/temp"
-            android:layout_width="195dp"
-            android:layout_height="104dp"
-            android:layout_marginTop="36dp"
+            android:layout_width="284dp"
+            android:layout_height="136dp"
+            android:layout_marginTop="20dp"
             android:gravity="center"
             android:text="@string/_31_c"
-            android:textSize="60dp"
+            android:textSize="100dp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.495"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/condicion"
             tools:ignore="MissingConstraints" />
@@ -75,24 +62,54 @@
             android:id="@+id/fotoTiempo"
             android:layout_width="268dp"
             android:layout_height="261dp"
-            android:layout_marginTop="48dp"
+            android:layout_marginTop="80dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.503"
+            app:layout_constraintHorizontal_bias="0.496"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/city"
             app:srcCompat="@drawable/nublado" />
 
         <TextView
+            android:id="@+id/condicion"
+            android:layout_width="148dp"
+            android:layout_height="25dp"
+            android:layout_marginTop="14dp"
+            android:gravity="center"
+            android:text="@string/nublado"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/fotoTiempo" />
+
+        <TextView
             android:id="@+id/bienvenida"
             android:layout_width="279dp"
             android:layout_height="36dp"
-            android:layout_marginTop="16dp"
+            android:layout_above="@+id/recyclerview"
+            android:layout_marginEnd="76dp"
             android:text="El tiempo de hoy"
+
+
             android:textSize="18dp"
+            app:layout_constraintBottom_toTopOf="@+id/recyclerview"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.298"
+            app:layout_constraintTop_toBottomOf="@+id/temp"
+            app:layout_constraintVertical_bias="0.794" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="36dp"
+            android:layout_marginTop="33dp"
+            android:orientation="horizontal"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/temp"
+            app:layout_constraintVertical_bias="0.675">
+
+        </androidx.recyclerview.widget.RecyclerView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
