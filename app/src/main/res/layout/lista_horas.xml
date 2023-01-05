@@ -17,13 +17,46 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/listaHora"
+        android:id="@+id/Hora"
         android:gravity="center"
         android:padding="4dp"
-        android:text="tiempo"
+        android:text="@string/tiempo"
         android:textColor="@color/white"
         android:textAlignment="center"
          />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/temperatura"
+            android:gravity="center"
+            android:text="20"
+            android:textColor="@color/white"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            android:layout_below="@+id/condicion"
+            />
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:id="@+id/fotolista"
+            android:layout_below="@+id/Hora"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="5dp"
+            android:padding="4dp"
+            android:src="@mipmap/ic_launcher"
+            />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/condicion"
+            android:gravity="center"
+            android:text="@string/nublado"
+            android:textColor="@color/white"
+            android:textAlignment="center"
+            android:textSize="12sp"
+            android:layout_below="@+id/fotolista"
+            ></TextView>
+
 
 
     </RelativeLayout>
