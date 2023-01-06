@@ -6,6 +6,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -46,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView temperatura;
     private TextView condicion;
     private ImageView icono;
+    private ImageView fondo;
     private SearchView busqueda;
     private TextView bienvenida;
     private RecyclerView listaHoras;
@@ -64,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
         temperatura = findViewById(R.id.temp);
         condicion = findViewById(R.id.condicion);
         icono = findViewById(R.id.fotoTiempo);
+        fondo = findViewById(R.id.fondo);
         bienvenida = findViewById(R.id.bienvenida);
         busqueda = findViewById(R.id.busqueda);
         listaHoras = findViewById(R.id.recyclerview);
@@ -122,8 +125,6 @@ public class MainActivity extends AppCompatActivity {
 
         //String ciudadInput = busqueda.getQuery().toString();
 
-
-
     }
 
     private String getNombreCiudad(double x, double y){
@@ -160,16 +161,15 @@ public class MainActivity extends AppCompatActivity {
                 finish();
 
             }
-
         }
     }
-
 
     private void getInfoTiempo(String ciudad){
         String url = "https://api.weatherapi.com/v1/forecast.json?key=ae53fdd1e6f9497e9a8160639222612&q="+ciudad+"&days=7&aqi=no&alerts=yes";
         lugar.setText(ciudad);
         RequestQueue peticion = Volley.newRequestQueue(MainActivity.this);
         JsonObjectRequest jsonPet = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+            @SuppressLint("SetTextI18n")
             @Override
             public void onResponse(JSONObject response) {
                 lista.clear();
@@ -179,14 +179,18 @@ public class MainActivity extends AppCompatActivity {
                     int dia = response.getJSONObject("current").getInt("is_day");
                     String cond = response.getJSONObject("current").getJSONObject("condition").getString("text");
                     String iconoCond = response.getJSONObject("current").getJSONObject("condition").getString("icon");
-                    Picasso.get().load("https:".concat(iconoCond)).into(icono);
+                    Picasso.get().load("http:".concat(iconoCond)).into(icono);
                     condicion.setText(cond);
+                    if(dia == 1){
+                        Picasso.get().load("https://images.unsplash.com/photo-1558418294-9da149757efe?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80").into(fondo);
+                    }else{
+                        Picasso.get().load("https://images.unsplash.com/photo-1472552944129-b035e9ea3744?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80").into(fondo);
+                    }
                 }
                 catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
-
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
