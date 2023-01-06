@@ -34,6 +34,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -165,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getInfoTiempo(String ciudad){
-        String url = "https://api.weatherapi.com/v1/forecast.json?key=ae53fdd1e6f9497e9a8160639222612&q="+ciudad+"&days=7&aqi=no&alerts=yes";
+        String url = "https://api.weatherapi.com/v1/forecast.json?key=ae53fdd1e6f9497e9a8160639222612&q="+ciudad+"&days=7&aqi=no&alerts=no&lang=es";
         lugar.setText(ciudad);
         RequestQueue peticion = Volley.newRequestQueue(MainActivity.this);
         JsonObjectRequest jsonPet = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
@@ -186,6 +187,19 @@ public class MainActivity extends AppCompatActivity {
                     }else{
                         Picasso.get().load("https://images.unsplash.com/photo-1472552944129-b035e9ea3744?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80").into(fondo);
                     }
+                    JSONObject prevision = response.getJSONObject("forecast");
+                    JSONObject prevHoy = prevision.getJSONArray("forecastday").getJSONObject(0); // dia actual
+                    JSONArray prevHoras = prevHoy.getJSONArray("hour");
+
+                    for(int i = 0; i < prevHoras.length(); i++){
+                        JSONObject horaAct = prevHoras.getJSONObject(i);
+                        String hora = horaAct.getString("time");
+                        String temp = horaAct.getString("temp_c");
+                        String condicion = horaAct.getJSONObject("condition").getString("text"); // cambiar
+                        String icono = horaAct.getJSONObject("condition").getString("icon");
+                        lista.add(new ListaHorasModelo(hora, temp, icono, condicion));
+                    }
+                    adaptador.notifyDataSetChanged();
                 }
                 catch (JSONException e) {
                     e.printStackTrace();
