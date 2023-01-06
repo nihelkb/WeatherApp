@@ -12,6 +12,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:id="@+id/fondo"
+            android:src="@color/white"
+            />
+
+
         <LinearLayout
             android:id="@+id/linearLayout"
             android:layout_width="0dp"
