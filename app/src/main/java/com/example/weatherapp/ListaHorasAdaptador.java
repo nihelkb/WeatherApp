@@ -51,8 +51,10 @@ public class ListaHorasAdaptador extends RecyclerView.Adapter<ListaHorasAdaptado
         catch (ParseException e) {
             e.printStackTrace();
         }
-        holder.condicion.setText(modelo.getCondicion());
-        Picasso.get().load("https://".concat(modelo.getIcono())).into(holder.icono);
+        holder.condicion.setText(modelo.getCondicion()+"Km/h");
+       Picasso.get().load("https:".concat(modelo.getIcono())).into(holder.icono);
+        //https://cdn-icons-png.flaticon.com/512/1146/1146856.png
+        //Picasso.get().load("https://cdn-icons-png.flaticon.com/512/1146/1146856.png").into(holder.icono);
 
     }
 
@@ -71,7 +73,8 @@ public class ListaHorasAdaptador extends RecyclerView.Adapter<ListaHorasAdaptado
             hora= itemView.findViewById(R.id.Hora);
             temperatura = itemView.findViewById(R.id.temperatura);
             condicion = itemView.findViewById(R.id.condicion);
-            icono = itemView.findViewById(R.id.fotoTiempo);
+            //icono = itemView.findViewById(R.id.fotoTiempo); NO ES
+            icono = itemView.findViewById(R.id.fotolista);
         }
     }
 }

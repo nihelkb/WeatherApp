@@ -57,11 +57,12 @@ public class MainActivity extends AppCompatActivity {
     private LocationManager localizacionM;
     private String ubicacionAct;
     private int codigoPermisos = 1;
+    private boolean permisosDenegados = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         setContentView(R.layout.activity_main);
         lugar = findViewById(R.id.city);
         temperatura = findViewById(R.id.temp);
@@ -72,12 +73,12 @@ public class MainActivity extends AppCompatActivity {
         busqueda = findViewById(R.id.busqueda);
         listaHoras = findViewById(R.id.recyclerview);
         lista = new ArrayList<>();
-        adaptador = new ListaHorasAdaptador(this,lista);
+        adaptador = new ListaHorasAdaptador(this, lista);
         listaHoras.setAdapter(adaptador);
 
-        localizacionM = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,Manifest.permission.ACCESS_FINE_LOCATION)){
+        localizacionM = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
                 new AlertDialog.Builder(this).setTitle("Se necesitan permisos").setMessage("Se necesita el permiso de ubicación").setPositiveButton("ok", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -91,27 +92,42 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                 }).create().show();
-            }
-            else {
+            } else {
                 ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, codigoPermisos);
             }
 
         }
+        // IF CLAVE
+        // IF CLAVE
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
 
-        Location localizacion = localizacionM.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-        String logitud = localizacion.getLongitude()+"";
-        String latitud = localizacion.getLatitude()+"";
-        Log.d("logitud", logitud);
-        Log.d("logitud", latitud);
-        ubicacionAct = getNombreCiudad(localizacion.getLongitude(), localizacion.getLatitude());
-        getInfoTiempo(ubicacionAct);
+            Location localizacion = localizacionM.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            String logitud = localizacion.getLongitude() + "";
+            String latitud = localizacion.getLatitude() + "";
+            Log.d("logitud", logitud);
+            Log.d("logitud", latitud);
+            ubicacionAct = getNombreCiudad(localizacion.getLongitude(), localizacion.getLatitude());
+            getInfoTiempo(ubicacionAct);
+
+
+
+
 
         busqueda.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String ciudad) {
-                if(ciudad.isEmpty()){
+                if (ciudad.isEmpty()) {
                     Toast.makeText(MainActivity.this, "Introduce una ciudad", Toast.LENGTH_SHORT).show();
-                }else{
+                } else {
                     lugar.setText(ciudad);
                     getInfoTiempo(ciudad);
                 }
@@ -123,42 +139,51 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
+        // }
+        String ciudadInput = busqueda.getQuery().toString();
+        //}
 
-        //String ciudadInput = busqueda.getQuery().toString();
 
     }
 
-    private String getNombreCiudad(double x, double y){
+    private String getNombreCiudad(double x, double y) {
+        Log.d("casa", "" + x + "" + y);
         String ciudad = "No encontrada";
-        Geocoder geoloc = new Geocoder(getBaseContext(), Locale.getDefault());
-        try{
-            List<Address> posiblesCiudades = geoloc.getFromLocation(x, y, 10);
-            String nombre;
-            for(int i = 0; i < posiblesCiudades.size(); i++){
-               Address dir = posiblesCiudades.get(i);
-               nombre = dir.getLocality();
-               if(nombre != null && !nombre.equals("")){
-                   ciudad = nombre;
-               }else{
-                   Log.d("TAG", "No se ha encontrado la ciudad");
-                   Toast.makeText(this, "Ubicación real no encontrada", Toast.LENGTH_SHORT).show();
-               }
+        try {
+            Geocoder geoloc = new Geocoder(this, Locale.getDefault());
+            List<Address> posiblesCiudades = geoloc.getFromLocation(x, y, 1);
+            String nombre = "";
+            Log.d("abud", "" + posiblesCiudades.size());
+            for (int i = 0; i < posiblesCiudades.size(); i++) {
+                // Log.d("abud","ssssssss");
+                Address dir = posiblesCiudades.get(i);
+                nombre = dir.getLocality();
+                if (nombre != null && !nombre.equals("")) {
+                    ciudad = nombre;
+                } else {
+                    Log.d("TAG", "No se ha encontrado la ciudad");
+                    Toast.makeText(this, "Ubicación real no encontrada", Toast.LENGTH_SHORT).show();
+                }
             }
-        }catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return ciudad;
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == codigoPermisos) {
-            if(grantResults.length>0 && grantResults[0]==PackageManager.PERMISSION_GRANTED){
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, "Permisos concedidos", Toast.LENGTH_SHORT).show();
+
+
             }
             else{
                 Toast.makeText(this, "Por favor, conceda los permisos", Toast.LENGTH_SHORT).show();
                 Log.d("casa","pedrito");
+                permisosDenegados = true;
                 finish();
 
             }
@@ -180,13 +205,16 @@ public class MainActivity extends AppCompatActivity {
                     int dia = response.getJSONObject("current").getInt("is_day");
                     String cond = response.getJSONObject("current").getJSONObject("condition").getString("text");
                     String iconoCond = response.getJSONObject("current").getJSONObject("condition").getString("icon");
-                    Picasso.get().load("http:".concat(iconoCond)).into(icono);
+                      Picasso.get().load("https:".concat(iconoCond)).into(icono);
+                   // https://cdn-icons-png.flaticon.com/512/1146/1146856.png
+                  //  Picasso.get().load("https://cdn-icons-png.flaticon.com/512/1146/1146856.png").into(icono);
                     condicion.setText(cond);
                     if(dia == 1){
                         Picasso.get().load("https://images.unsplash.com/photo-1558418294-9da149757efe?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80").into(fondo);
                     }else{
                         Picasso.get().load("https://images.unsplash.com/photo-1472552944129-b035e9ea3744?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80").into(fondo);
                     }
+
                     JSONObject prevision = response.getJSONObject("forecast");
                     JSONObject prevHoy = prevision.getJSONArray("forecastday").getJSONObject(0); // dia actual
                     JSONArray prevHoras = prevHoy.getJSONArray("hour");
@@ -195,11 +223,14 @@ public class MainActivity extends AppCompatActivity {
                         JSONObject horaAct = prevHoras.getJSONObject(i);
                         String hora = horaAct.getString("time");
                         String temp = horaAct.getString("temp_c");
-                        String condicion = horaAct.getJSONObject("condition").getString("text"); // cambiar
+                       // String condicion = horaAct.getJSONObject("condition").getString("text"); // cambia
+                        String condicion = horaAct.getString("wind_kph"); // cambiar
                         String icono = horaAct.getJSONObject("condition").getString("icon");
                         lista.add(new ListaHorasModelo(hora, temp, icono, condicion));
                     }
                     adaptador.notifyDataSetChanged();
+
+
                 }
                 catch (JSONException e) {
                     e.printStackTrace();

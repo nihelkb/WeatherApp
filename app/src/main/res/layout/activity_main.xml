@@ -55,14 +55,13 @@
 
         <TextView
             android:id="@+id/temp"
-            android:layout_width="284dp"
-            android:layout_height="136dp"
+            android:layout_width="341dp"
+            android:layout_height="112dp"
             android:layout_marginTop="20dp"
             android:gravity="center|fill_vertical"
             android:text="@string/_31_c"
-            android:textSize="100sp"
+            android:textSize="90sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.495"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/condicion"
             tools:ignore="MissingConstraints" />
@@ -111,14 +110,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_marginStart="64dp"
+            android:layout_marginStart="40dp"
             android:layout_marginTop="33dp"
             android:orientation="horizontal"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/temp"
-            app:layout_constraintVertical_bias="0.423">
+            app:layout_constraintVertical_bias="0.461">
 
         </androidx.recyclerview.widget.RecyclerView>
 
