@@ -10,7 +10,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        >
 
         <ImageView
             android:layout_width="match_parent"
@@ -23,7 +24,7 @@
 
         <LinearLayout
             android:id="@+id/linearLayout"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="53dp"
             android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -120,6 +121,15 @@
             app:layout_constraintVertical_bias="0.461">
 
         </androidx.recyclerview.widget.RecyclerView>
+
+        <ListView
+            android:id="@+id/listaDias"
+            android:layout_width="229dp"
+            android:layout_height="61dp"
+            android:layout_marginTop="1dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/recyclerview" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

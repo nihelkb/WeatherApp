@@ -11,13 +11,17 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -62,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+      //  getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         setContentView(R.layout.activity_main);
         lugar = findViewById(R.id.city);
         temperatura = findViewById(R.id.temp);
@@ -100,26 +104,17 @@ public class MainActivity extends AppCompatActivity {
         // IF CLAVE
         // IF CLAVE
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
+
             return;
         }
 
-            Location localizacion = localizacionM.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-            String logitud = localizacion.getLongitude() + "";
-            String latitud = localizacion.getLatitude() + "";
-            Log.d("logitud", logitud);
-            Log.d("logitud", latitud);
-            ubicacionAct = getNombreCiudad(localizacion.getLongitude(), localizacion.getLatitude());
-            getInfoTiempo(ubicacionAct);
-
-
-
+        Location localizacion = localizacionM.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        String logitud = localizacion.getLongitude() + "";
+        String latitud = localizacion.getLatitude() + "";
+        Log.d("logitud", logitud);
+        Log.d("logitud", latitud);
+        ubicacionAct = getNombreCiudad(localizacion.getLongitude(), localizacion.getLatitude());
+        getInfoTiempo(ubicacionAct);
 
 
         busqueda.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -177,7 +172,23 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == codigoPermisos) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, "Permisos concedidos", Toast.LENGTH_SHORT).show();
-
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    return;
+                }
+                Location localizacion = localizacionM.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                String logitud = localizacion.getLongitude() + "";
+                String latitud = localizacion.getLatitude() + "";
+                Log.d("logitud", logitud);
+                Log.d("logitud", latitud);
+                ubicacionAct = getNombreCiudad(localizacion.getLongitude(), localizacion.getLatitude());
+                getInfoTiempo(ubicacionAct);
 
             }
             else{
@@ -210,7 +221,15 @@ public class MainActivity extends AppCompatActivity {
                   //  Picasso.get().load("https://cdn-icons-png.flaticon.com/512/1146/1146856.png").into(icono);
                     condicion.setText(cond);
                     if(dia == 1){
-                        Picasso.get().load("https://images.unsplash.com/photo-1558418294-9da149757efe?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80").into(fondo);
+                        Picasso.get().load("https://images.unsplash.com/photo-1622148173169-e1c0b206384a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=688&q=80").into(fondo);
+                        /*
+                        temperatura.setTextColor(Color.parseColor("#FF000000"));
+                        condicion.setTextColor(Color.parseColor("#FF000000"));
+                        bienvenida.setTextColor(Color.parseColor("#FF000000"));
+                        lugar.setTextColor(Color.parseColor("#FF000000"));
+                        */
+
+
                     }else{
                         Picasso.get().load("https://images.unsplash.com/photo-1472552944129-b035e9ea3744?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80").into(fondo);
                     }
@@ -246,5 +265,21 @@ public class MainActivity extends AppCompatActivity {
         peticion.add(jsonPet);
 
 
+    }
+
+    public boolean onCreateOptionsMenu(Menu menu){
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        Intent intento = new Intent(Intent.ACTION_SEND);
+        intento.setType("text/plain");
+        //intento.putExtra(Intent.EXTRA_SUBJECT,"El tiempo");
+        intento.putExtra(Intent.EXTRA_TEXT,"tiempo de hoy"+" casa");
+        //intento.putExtra(Intent.EXTRA_TEXT,"tiempo de hoy2");
+        startActivity(Intent.createChooser(intento, "Share via"));
+        return super.onOptionsItemSelected(item);
     }
 }
