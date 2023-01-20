@@ -3,12 +3,19 @@ package com.example.weatherapp;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -18,11 +25,14 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -62,6 +72,12 @@ public class MainActivity extends AppCompatActivity {
     private String ubicacionAct;
     private int codigoPermisos = 1;
     private boolean permisosDenegados = false;
+    //NOTIFICACION
+    private PendingIntent pendingIntent;
+    private final static String CHANNEL_ID = "NOTIFICACION";
+    private final static int NOTIFICACION_ID = 0;
+    private double temp = 0;
+    private boolean lluvia = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,8 +95,8 @@ public class MainActivity extends AppCompatActivity {
         lista = new ArrayList<>();
         adaptador = new ListaHorasAdaptador(this, lista);
         listaHoras.setAdapter(adaptador);
-
         localizacionM = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
                 new AlertDialog.Builder(this).setTitle("Se necesitan permisos").setMessage("Se necesita el permiso de ubicación").setPositiveButton("ok", new DialogInterface.OnClickListener() {
@@ -138,6 +154,62 @@ public class MainActivity extends AppCompatActivity {
         String ciudadInput = busqueda.getQuery().toString();
         //}
 
+
+    }
+
+    public void onStop(){
+        super.onStop();
+        if(lluvia || temp < 15) {
+            setPendingIntent();
+            creaCanalNotificacion();
+            creaNotification();
+        }
+
+    }
+
+    private void setPendingIntent() {
+
+        Intent intento = new Intent(this,MainActivity.class);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addParentStack(MainActivity.this);
+        stackBuilder.addNextIntent(intento);
+        pendingIntent = stackBuilder.getPendingIntent(1,pendingIntent.FLAG_MUTABLE); // DABA ERROR
+
+
+
+    }
+    private void creaCanalNotificacion(){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            CharSequence nombre = "Noticacion";
+            NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, nombre, NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            notificationManager.createNotificationChannel(notificationChannel);
+        }
+    }
+
+    private void creaNotification() {
+        String mensaje = " ";
+        if(lluvia){
+            mensaje = "Recuerde usar paraguas debido a las preticipaciones";
+        }
+        else if(temp < 15) {
+            mensaje = "Abriguese debido a las bajas temperaturas";
+        }
+        if(!mensaje.equals(" ")) {
+            NotificationCompat.Builder notificacion = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID);
+            notificacion.setSmallIcon(R.drawable.icon);
+            notificacion.setContentTitle("RECUERDE");
+            notificacion.setContentText(mensaje);
+            notificacion.setColor(Color.WHITE);
+            notificacion.setPriority(NotificationCompat.PRIORITY_DEFAULT);
+            notificacion.setLights(Color.MAGENTA, 1000, 1000);
+            notificacion.setVibrate(new long[]{1000, 1000, 1000, 1000, 1000});
+            notificacion.setDefaults(Notification.DEFAULT_SOUND);
+            notificacion.setContentIntent(pendingIntent);
+
+            NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(getApplicationContext());
+            notificationManagerCompat.notify(NOTIFICACION_ID, notificacion.build());
+        }
 
     }
 
@@ -212,9 +284,14 @@ public class MainActivity extends AppCompatActivity {
                 lista.clear();
                 try{
                     String temperaturaJson = response.getJSONObject("current").getString("temp_c");
+
+                    temp = Double.parseDouble(temperaturaJson); // PARA LA NOTIFICACION
                     temperatura.setText(temperaturaJson+"ºC");
                     int dia = response.getJSONObject("current").getInt("is_day");
                     String cond = response.getJSONObject("current").getJSONObject("condition").getString("text");
+                    if(cond.equals("Llovizna")){
+                        lluvia = true;
+                    }
                     String iconoCond = response.getJSONObject("current").getJSONObject("condition").getString("icon");
                       Picasso.get().load("https:".concat(iconoCond)).into(icono);
                    // https://cdn-icons-png.flaticon.com/512/1146/1146856.png
@@ -282,4 +359,5 @@ public class MainActivity extends AppCompatActivity {
         startActivity(Intent.createChooser(intento, "Share via"));
         return super.onOptionsItemSelected(item);
     }
+
 }

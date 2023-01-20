@@ -1,9 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="350dp"
+    android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".lista_dias">
+    android:layout_gravity="center"
+    android:layout_margin="4dp"
+    app:cardElevation="6dp"
+    app:cardCornerRadius="10dp"
+    android:background="@android:color/transparent"
+    >
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/carta2"
 
-</LinearLayout>
+        >
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/Hora"
+            android:gravity="center"
+            android:padding="4dp"
+            android:text="@string/tiempo"
+            android:textColor="@color/white"
+            android:textAlignment="center"
+            />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/temperatura"
+            android:gravity="center"
+            android:text="20"
+            android:textColor="@color/white"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            android:layout_below="@+id/condicion"
+            />
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:id="@+id/fotolista"
+            android:layout_below="@+id/Hora"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="5dp"
+            android:padding="4dp"
+            android:src="@mipmap/ic_launcher"
+            />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/condicion"
+            android:gravity="center"
+            android:text="@string/nublado"
+            android:textColor="@color/white"
+            android:textAlignment="center"
+            android:textSize="12sp"
+            android:layout_below="@+id/fotolista"
+            ></TextView>
+
+
+
+    </RelativeLayout>
+
+
+
+
+
+</androidx.cardview.widget.CardView>
