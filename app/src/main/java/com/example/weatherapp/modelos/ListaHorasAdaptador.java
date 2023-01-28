@@ -65,7 +65,6 @@ public class ListaHorasAdaptador extends RecyclerView.Adapter<ListaHorasAdaptado
         }*/
         String[] fecha = modelo.getHora().split(" ");
         holder.hora.setText(fecha[1]);
-        //holder.condicion.setText(modelo.getCondicion()+"km/h");
         holder.condicion.setText(modelo.getCondicion()+"% 🌧");
         //Picasso.get().load("https:".concat(modelo.getImagen())).into(holder.icono);
         Utils.setImageToImageView(holder.icono,modelo.getImagen());
@@ -89,7 +88,6 @@ public class ListaHorasAdaptador extends RecyclerView.Adapter<ListaHorasAdaptado
             hora= itemView.findViewById(R.id.Hora);
             temperatura = itemView.findViewById(R.id.temperatura);
             condicion = itemView.findViewById(R.id.condicion);
-            //icono = itemView.findViewById(R.id.fotoTiempo); NO ES
             icono = itemView.findViewById(R.id.fotolista);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -111,6 +109,4 @@ public class ListaHorasAdaptador extends RecyclerView.Adapter<ListaHorasAdaptado
             });
         }
     }
-
-
 }

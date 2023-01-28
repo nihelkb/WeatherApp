@@ -18,13 +18,9 @@ import java.util.List;
 
 public class DescargarDatosEspecificosTarea extends AsyncTask<Void,Void, DatosEspecificosModelo> {
     private Activity act;
-
     private Coordenadas coordenadas;
-
     private boolean datosDescargados;
-
     private DatosEspecificosModelo datos;
-
     private int index;
 
     public DescargarDatosEspecificosTarea(Activity act, Coordenadas coordenadas, int index){
@@ -65,15 +61,5 @@ public class DescargarDatosEspecificosTarea extends AsyncTask<Void,Void, DatosEs
                 act.home.setVisibility(View.VISIBLE);
             }
         });
-
-        System.out.println(datos);
-        /**act.lugar.setText(datos.getLugar());
-        act.temperatura.setText(tiempoActual.getTemperatura());
-        if (tiempoActual.getCondicion() == null);
-        Utils.setImageToImageView(act.icono,tiempoActual.getImagen());
-        act.condicion.setText(tiempoActual.getCondicion());
-        act.lista = listaTiempos;
-        act.adaptador.setListaModelo(act.lista);
-        act.adaptador.notifyDataSetChanged();*/
     }
 }

@@ -14,11 +14,8 @@ import java.util.List;
 
 public class ComprobarLluviaTarea extends AsyncTask<Void,Void, Boolean> {
     private MainActivity act;
-
     private Coordenadas coordenadas;
-
     private boolean datosDescargados;
-
     private boolean it_will_rain;
 
     public ComprobarLluviaTarea(MainActivity act, Coordenadas coordenadas) {

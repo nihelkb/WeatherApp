@@ -92,8 +92,6 @@ public class ServiciosWeb {
                             horaAc = ldt.getHour();
                         }
 
-
-
                         for(int i = 0; i < prevHoras.length(); i++){
                             JSONObject horaAct = prevHoras.getJSONObject(i);
                             String hora = horaAct.getString("time");

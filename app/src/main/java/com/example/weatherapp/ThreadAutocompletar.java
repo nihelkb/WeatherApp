@@ -19,7 +19,6 @@ import okhttp3.Response;
 
 public class ThreadAutocompletar implements Runnable{
 
-
     private String textoPrevio;
     private String texto;
 

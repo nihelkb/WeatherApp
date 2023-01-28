@@ -64,7 +64,6 @@ public class DescargarDatosTiempoTarea extends AsyncTask<Void,Void, ParDatos> {
         }else{
             Utils.setImageToImageView(act.icono,tiempoActual.getImagen());
         }
-        //Utils.setImageToImageView(act.icono,tiempoActual.getImagen());
         act.condicion.setText(tiempoActual.getCondicion());
         act.lista = listaTiempos;
         act.adaptador.setListaModelo(act.lista);

@@ -67,7 +67,6 @@ public class MainActivity extends AppCompatActivity implements ListaAuxiliarInte
     public ScrollView home;
     public ProgressBar loading;
 
-
     LocationManager mLocationManager;
 
     public static MainActivity act;
@@ -75,8 +74,7 @@ public class MainActivity extends AppCompatActivity implements ListaAuxiliarInte
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        //  getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+    //  getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         setContentView(R.layout.activity_main);
         Utils.crearParIconoCond();
         act = this;
@@ -185,10 +183,8 @@ public class MainActivity extends AppCompatActivity implements ListaAuxiliarInte
                 //manager.hideSoftInputFromWindow(getCurrentFocus().getApplicationWindowToken(),0);
             }
         });
-        // }
-        String ciudadInput = busqueda.getText().toString();
-        //}
 
+        String ciudadInput = busqueda.getText().toString();
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
                 new AlertDialog.Builder(this).setTitle("Se necesitan permisos").setMessage("Se necesita el permiso de ubicación").setPositiveButton("ok", new DialogInterface.OnClickListener() {
@@ -216,25 +212,12 @@ public class MainActivity extends AppCompatActivity implements ListaAuxiliarInte
             return;
         }
 
-
-
-        //Location localizacion = localizacionM.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
         Location localizacion = getLastKnownLocation();
         String longitud = localizacion.getLongitude() + "";
         String latitud = localizacion.getLatitude() + "";
-        Log.d("logitud", longitud);
-        Log.d("logitud", latitud);
-        //ubicacionAct = getNombreCiudad(localizacion.getLongitude(), localizacion.getLatitude());
         Coordenadas coordenadas = new Coordenadas(longitud, latitud);
-        //ubicacionAct = getNombreCiudad(40.37827610146286, -3.6403587195609477);
         DescargarDatosTiempoTarea datos = new DescargarDatosTiempoTarea(this, coordenadas);
         datos.execute();
-
-
-
-
-
-
     }
 
     public Location getLastKnownLocation() {
@@ -268,30 +251,21 @@ public class MainActivity extends AppCompatActivity implements ListaAuxiliarInte
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, "Permisos concedidos", Toast.LENGTH_SHORT).show();
                 if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
                     return;
                 }
 
                 Location localizacion = getLastKnownLocation();
                 String longitud = localizacion.getLongitude() + "";
                 String latitud = localizacion.getLatitude() + "";
-                //Toast.makeText(this, longitud, Toast.LENGTH_SHORT).show();
 
-                Log.d("logitud", longitud);
-                Log.d("logitud", latitud);
-                //ubicacionAct = getNombreCiudad(localizacion.getLongitude(), localizacion.getLatitude());
                 Coordenadas coordenadas = new Coordenadas(longitud, latitud);
-                //ubicacionAct = getNombreCiudad(40.37827610146286, -3.6403587195609477);
                 DescargarDatosTiempoTarea datos = new DescargarDatosTiempoTarea(this, coordenadas);
                 datos.execute();
-
-            }
-            else{
+            }else{
                 Toast.makeText(this, "Por favor, conceda los permisos", Toast.LENGTH_SHORT).show();
                 Log.d("casa","pedrito");
                 permisosDenegados = true;
                 finish();
-
             }
         }
     }
@@ -337,7 +311,6 @@ public class MainActivity extends AppCompatActivity implements ListaAuxiliarInte
                     emojiCond = "";
                 }
                 previsionDiaria.append(condicionHoy + " " + emojiCond + "\n"); // condicion
-
                 previsionDiaria.append("Temperatura: ");
                 String temperaturaHoy = temperatura.getText().toString();
                 String[] tempArr = temperaturaHoy.split("º");

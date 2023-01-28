@@ -28,7 +28,6 @@ public class HoraEspecificaActivity extends AppCompatActivity {
 
     public ProgressBar loading;
 
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,11 +52,5 @@ public class HoraEspecificaActivity extends AppCompatActivity {
         DescargarDatosEspecificosTarea datosEspecificos = new DescargarDatosEspecificosTarea(act,coords,pos);
         datosEspecificos.execute();
         System.out.println(home + " " + loading);
-
-        //String temperatura = getIntent().getStringExtra()
-
     }
-
-
-
 }
