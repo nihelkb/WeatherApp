@@ -26,7 +26,7 @@ public class Constantes {
 
     public static Map<String, String> icons = new HashMap<String, String>();
 
-    public static final long SERVICIO_NOTIFICACIONES_MS = 1*30*1000; // 1*60*60*1000 -> 1 hora   1*60*1000 -> 1 minuto
+    public static final long SERVICIO_NOTIFICACIONES_MS = 1*60*60*1000; // 1*60*60*1000 -> 1 hora   1*60*1000 -> 1 minuto
 
 
 
