@@ -6,81 +6,189 @@ import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.InputType;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.WindowManager;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.SearchView;
+import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
-import com.squareup.picasso.Picasso;
+import com.example.weatherapp.contexto.LoginContext;
+import com.example.weatherapp.contexto.UltimaLocalizacion;
+import com.example.weatherapp.modelos.Coordenadas;
+import com.example.weatherapp.modelos.DatosTiempoModelo;
+import com.example.weatherapp.modelos.ListaHorasAdaptador;
+import com.example.weatherapp.modelos.LocalidadArrayAdaptador;
+import com.example.weatherapp.servicios.DescargarDatosEspecificosTarea;
+import com.example.weatherapp.servicios.DescargarDatosTiempoTarea;
+import com.example.weatherapp.servicios.jobs.Actualizador;
+import com.example.weatherapp.util.Constantes;
+import com.example.weatherapp.util.Utils;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity {
-    private TextView lugar;
-    private TextView temperatura;
-    private TextView condicion;
-    private ImageView icono;
+public class MainActivity extends AppCompatActivity implements ListaAuxiliarInterfaz{
+    public TextView lugar;
+    public TextView temperatura;
+    public TextView condicion;
+    public ImageView icono;
+    public ImageView myloc;
     private ImageView fondo;
-    private SearchView busqueda;
+    public AutoCompleteTextView busqueda;
     private TextView bienvenida;
-    private RecyclerView listaHoras;
-    private List<ListaHorasModelo> lista;
-    private ListaHorasAdaptador adaptador;
+    public RecyclerView listaHoras;
+    public List<DatosTiempoModelo> lista;
+    public ListaHorasAdaptador adaptador;
     private LocationManager localizacionM;
+
     private String ubicacionAct;
     private int codigoPermisos = 1;
     private boolean permisosDenegados = false;
 
+    public ScrollView home;
+    public ProgressBar loading;
+
+
+    LocationManager mLocationManager;
+
+    public static MainActivity act;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-      //  getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+
+        //  getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         setContentView(R.layout.activity_main);
+        Utils.crearParIconoCond();
+        act = this;
+        LoginContext lc = (LoginContext) getApplicationContext();
+        if (lc.getLogin() == null) {
+            lc.setLogin(Utils.getUserFromPreferences(act));
+            if (!lc.credencialesGuardadas()) {
+                Intent i = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(i);
+                return;
+            }
+        }
+        Actualizador.programar(this);
+        home = findViewById(R.id.home);
+        loading = findViewById(R.id.progressBar);
         lugar = findViewById(R.id.city);
         temperatura = findViewById(R.id.temp);
         condicion = findViewById(R.id.condicion);
         icono = findViewById(R.id.fotoTiempo);
+        myloc = findViewById(R.id.mylocalization);
         fondo = findViewById(R.id.fondo);
         bienvenida = findViewById(R.id.bienvenida);
-        busqueda = findViewById(R.id.busqueda);
+        busqueda = findViewById(R.id.autoCompletar);
         listaHoras = findViewById(R.id.recyclerview);
         lista = new ArrayList<>();
-        adaptador = new ListaHorasAdaptador(this, lista);
+        adaptador = new ListaHorasAdaptador(this, lista,this);
         listaHoras.setAdapter(adaptador);
+        listaHoras.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                System.out.println(view);
+            }
+        });
 
         localizacionM = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            if(!localizacionM.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+                System.out.println("GPS NO ACTIVADO");
+                Toast.makeText(this, "Por favor, activa la ubicación", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        }
+
+        ThreadAutocompletar auto = new ThreadAutocompletar(act);
+        Thread th = new Thread(auto);
+        th.start();
+        System.out.println("LANZO THREAD AUTOCOMPLETAR");
+
+        myloc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Location localizacion = getLastKnownLocation();
+                if(localizacion == null){
+                    Toast.makeText(MainActivity.this, "Por favor, activa la geolocalización", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                String longitud = localizacion.getLongitude() + "";
+                String latitud = localizacion.getLatitude() + "";
+                Coordenadas coordenadas = new Coordenadas(longitud, latitud);
+                DescargarDatosTiempoTarea datos = new DescargarDatosTiempoTarea(MainActivity.this, coordenadas);
+                datos.execute();
+                busqueda.setText("");
+            }
+        });
+
+        busqueda.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if(charSequence.toString().equals("")){
+                    return;
+                }
+                auto.actualizarTexto(charSequence.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+        busqueda.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                InputMethodManager manager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                manager.hideSoftInputFromWindow(getCurrentFocus().getApplicationWindowToken(),0);
+                LocalidadArrayAdaptador<String> adaptador = (LocalidadArrayAdaptador<String>)busqueda.getAdapter();
+                List<Coordenadas> listaCoordenadas = adaptador.getCoordenadasLista();
+                UltimaLocalizacion.ultimasCoordenadasBuscadas = listaCoordenadas.get(i);
+                if (listaCoordenadas != null && i < lista.size()){
+                    DescargarDatosTiempoTarea datos = new DescargarDatosTiempoTarea(act,listaCoordenadas.get(i));
+                    datos.execute();
+                }
+            }
+        });
+
+        busqueda.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+        busqueda.setOnDismissListener(new AutoCompleteTextView.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                //InputMethodManager manager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                //manager.hideSoftInputFromWindow(getCurrentFocus().getApplicationWindowToken(),0);
+            }
+        });
+        // }
+        String ciudadInput = busqueda.getText().toString();
+        //}
+
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
                 new AlertDialog.Builder(this).setTitle("Se necesitan permisos").setMessage("Se necesita el permiso de ubicación").setPositiveButton("ok", new DialogInterface.OnClickListener() {
@@ -101,69 +209,56 @@ public class MainActivity extends AppCompatActivity {
             }
 
         }
-        // IF CLAVE
-        // IF CLAVE
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
+        // IF CLAVE
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+            && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
 
-        Location localizacion = localizacionM.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-        String logitud = localizacion.getLongitude() + "";
+
+
+        //Location localizacion = localizacionM.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        Location localizacion = getLastKnownLocation();
+        String longitud = localizacion.getLongitude() + "";
         String latitud = localizacion.getLatitude() + "";
-        Log.d("logitud", logitud);
+        Log.d("logitud", longitud);
         Log.d("logitud", latitud);
-        ubicacionAct = getNombreCiudad(localizacion.getLongitude(), localizacion.getLatitude());
-        getInfoTiempo(ubicacionAct);
+        //ubicacionAct = getNombreCiudad(localizacion.getLongitude(), localizacion.getLatitude());
+        Coordenadas coordenadas = new Coordenadas(longitud, latitud);
+        //ubicacionAct = getNombreCiudad(40.37827610146286, -3.6403587195609477);
+        DescargarDatosTiempoTarea datos = new DescargarDatosTiempoTarea(this, coordenadas);
+        datos.execute();
 
 
-        busqueda.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String ciudad) {
-                if (ciudad.isEmpty()) {
-                    Toast.makeText(MainActivity.this, "Introduce una ciudad", Toast.LENGTH_SHORT).show();
-                } else {
-                    lugar.setText(ciudad);
-                    getInfoTiempo(ciudad);
-                }
-                return true;
-            }
 
-            @Override // Se puede utilizar para sugerir los paises (opcional)
-            public boolean onQueryTextChange(String s) {
-                return false;
-            }
-        });
-        // }
-        String ciudadInput = busqueda.getQuery().toString();
-        //}
+
 
 
     }
 
-    private String getNombreCiudad(double x, double y) {
-        Log.d("casa", "" + x + "" + y);
-        String ciudad = "No encontrada";
-        try {
-            Geocoder geoloc = new Geocoder(this, Locale.getDefault());
-            List<Address> posiblesCiudades = geoloc.getFromLocation(x, y, 1);
-            String nombre = "";
-            Log.d("abud", "" + posiblesCiudades.size());
-            for (int i = 0; i < posiblesCiudades.size(); i++) {
-                // Log.d("abud","ssssssss");
-                Address dir = posiblesCiudades.get(i);
-                nombre = dir.getLocality();
-                if (nombre != null && !nombre.equals("")) {
-                    ciudad = nombre;
-                } else {
-                    Log.d("TAG", "No se ha encontrado la ciudad");
-                    Toast.makeText(this, "Ubicación real no encontrada", Toast.LENGTH_SHORT).show();
-                }
+    public Location getLastKnownLocation() {
+        mLocationManager = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
+        List<String> providers = mLocationManager.getProviders(true);
+        Location bestLocation = null;
+        for (String provider : providers) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+            Location l = mLocationManager.getLastKnownLocation(provider);
+            if (l == null) {
+                continue;
+            }
+            if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
+                // Found best last known location: %s", l);
+                bestLocation = l;
+            }
         }
-        return ciudad;
+        if (bestLocation != null){
+            UltimaLocalizacion.ultimaLocalizacion = bestLocation;
+        }
+        System.out.println(UltimaLocalizacion.ultimaLocalizacion);
+        return bestLocation;
     }
 
     @Override
@@ -173,22 +268,22 @@ public class MainActivity extends AppCompatActivity {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, "Permisos concedidos", Toast.LENGTH_SHORT).show();
                 if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    // TODO: Consider calling
-                    //    ActivityCompat#requestPermissions
-                    // here to request the missing permissions, and then overriding
-                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                    //                                          int[] grantResults)
-                    // to handle the case where the user grants the permission. See the documentation
-                    // for ActivityCompat#requestPermissions for more details.
+
                     return;
                 }
-                Location localizacion = localizacionM.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                String logitud = localizacion.getLongitude() + "";
+
+                Location localizacion = getLastKnownLocation();
+                String longitud = localizacion.getLongitude() + "";
                 String latitud = localizacion.getLatitude() + "";
-                Log.d("logitud", logitud);
+                //Toast.makeText(this, longitud, Toast.LENGTH_SHORT).show();
+
+                Log.d("logitud", longitud);
                 Log.d("logitud", latitud);
-                ubicacionAct = getNombreCiudad(localizacion.getLongitude(), localizacion.getLatitude());
-                getInfoTiempo(ubicacionAct);
+                //ubicacionAct = getNombreCiudad(localizacion.getLongitude(), localizacion.getLatitude());
+                Coordenadas coordenadas = new Coordenadas(longitud, latitud);
+                //ubicacionAct = getNombreCiudad(40.37827610146286, -3.6403587195609477);
+                DescargarDatosTiempoTarea datos = new DescargarDatosTiempoTarea(this, coordenadas);
+                datos.execute();
 
             }
             else{
@@ -201,72 +296,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void getInfoTiempo(String ciudad){
-        String url = "https://api.weatherapi.com/v1/forecast.json?key=ae53fdd1e6f9497e9a8160639222612&q="+ciudad+"&days=7&aqi=no&alerts=no&lang=es";
-        lugar.setText(ciudad);
-        RequestQueue peticion = Volley.newRequestQueue(MainActivity.this);
-        JsonObjectRequest jsonPet = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void onResponse(JSONObject response) {
-                lista.clear();
-                try{
-                    String temperaturaJson = response.getJSONObject("current").getString("temp_c");
-                    temperatura.setText(temperaturaJson+"ºC");
-                    int dia = response.getJSONObject("current").getInt("is_day");
-                    String cond = response.getJSONObject("current").getJSONObject("condition").getString("text");
-                    String iconoCond = response.getJSONObject("current").getJSONObject("condition").getString("icon");
-                      Picasso.get().load("https:".concat(iconoCond)).into(icono);
-                   // https://cdn-icons-png.flaticon.com/512/1146/1146856.png
-                  //  Picasso.get().load("https://cdn-icons-png.flaticon.com/512/1146/1146856.png").into(icono);
-                    condicion.setText(cond);
-                    if(dia == 1){
-                        Picasso.get().load("https://images.unsplash.com/photo-1622148173169-e1c0b206384a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=688&q=80").into(fondo);
-                        /*
-                        temperatura.setTextColor(Color.parseColor("#FF000000"));
-                        condicion.setTextColor(Color.parseColor("#FF000000"));
-                        bienvenida.setTextColor(Color.parseColor("#FF000000"));
-                        lugar.setTextColor(Color.parseColor("#FF000000"));
-                        */
-
-
-                    }else{
-                        Picasso.get().load("https://images.unsplash.com/photo-1472552944129-b035e9ea3744?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80").into(fondo);
-                    }
-
-                    JSONObject prevision = response.getJSONObject("forecast");
-                    JSONObject prevHoy = prevision.getJSONArray("forecastday").getJSONObject(0); // dia actual
-                    JSONArray prevHoras = prevHoy.getJSONArray("hour");
-
-                    for(int i = 0; i < prevHoras.length(); i++){
-                        JSONObject horaAct = prevHoras.getJSONObject(i);
-                        String hora = horaAct.getString("time");
-                        String temp = horaAct.getString("temp_c");
-                       // String condicion = horaAct.getJSONObject("condition").getString("text"); // cambia
-                        String condicion = horaAct.getString("wind_kph"); // cambiar
-                        String icono = horaAct.getJSONObject("condition").getString("icon");
-                        lista.add(new ListaHorasModelo(hora, temp, icono, condicion));
-                    }
-                    adaptador.notifyDataSetChanged();
-
-
-                }
-                catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(MainActivity.this, "Introduzca una ciudad valida", Toast.LENGTH_SHORT).show();
-
-            }
-        });
-        peticion.add(jsonPet);
-
-
-    }
-
     public boolean onCreateOptionsMenu(Menu menu){
         getMenuInflater().inflate(R.menu.menu, menu);
         return super.onCreateOptionsMenu(menu);
@@ -274,12 +303,75 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        Intent intento = new Intent(Intent.ACTION_SEND);
-        intento.setType("text/plain");
-        //intento.putExtra(Intent.EXTRA_SUBJECT,"El tiempo");
-        intento.putExtra(Intent.EXTRA_TEXT,"tiempo de hoy"+" casa");
-        //intento.putExtra(Intent.EXTRA_TEXT,"tiempo de hoy2");
-        startActivity(Intent.createChooser(intento, "Share via"));
+        switch(item.getItemId()){
+            case R.id.logout_button:
+                Utils.deleteUserInPreferences(act);
+                Intent i = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(i);
+                break;
+            case R.id.share_button:
+                Intent intento = new Intent(Intent.ACTION_SEND);
+                intento.setType("text/plain");
+
+                StringBuilder previsionDiaria = new StringBuilder("El tiempo para hoy en ");
+                previsionDiaria.append(lugar.getText().toString());
+                previsionDiaria.append(" es:\n");
+
+                previsionDiaria.append("Condición: ");
+                String condicionHoy = condicion.getText().toString();
+                String emojiCond;
+
+                if(Constantes.nubladoSet.contains(condicionHoy)){
+                    emojiCond = Constantes.emojis[1];
+                }else if (Constantes.lluviaSet.contains(condicionHoy)) {
+                    emojiCond = Constantes.emojis[0];
+                }else if (Constantes.nieveSet.contains(condicionHoy)) {
+                    emojiCond = Constantes.emojis[3];
+                }else if (condicionHoy.equals("Soleado")) {
+                    emojiCond = Constantes.emojis[2];
+                }else if (condicionHoy.equals("Cielo cubierto")) {
+                    emojiCond = Constantes.emojis[4];
+                }else if (condicionHoy.equals("Despejado")) {
+                    emojiCond = Constantes.emojis[5];
+                }else{
+                    emojiCond = "";
+                }
+                previsionDiaria.append(condicionHoy + " " + emojiCond + "\n"); // condicion
+
+                previsionDiaria.append("Temperatura: ");
+                String temperaturaHoy = temperatura.getText().toString();
+                String[] tempArr = temperaturaHoy.split("º");
+                String emojiTemp;
+                Double t = Double.parseDouble(tempArr[0]);
+                if(t < 15){
+                    emojiTemp = "🥶";
+                }else if(t > 25){
+                    emojiTemp = "🥵";
+                }else{
+                    emojiTemp = "😃";
+                }
+                previsionDiaria.append(temperatura.getText().toString() + " " + emojiTemp + "\n"); // temp
+                //previsionDiaria.append("Probabilidad de lluvia: ");
+                //previsionDiaria.append("%\n"); // prob lluvia
+
+                intento.putExtra(Intent.EXTRA_TEXT,previsionDiaria.toString());
+                startActivity(Intent.createChooser(intento, "Compartir"));
+                break;
+        }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onItemClick(int posicion) {
+        Coordenadas coords = UltimaLocalizacion.ultimasCoordenadasBuscadas;
+        if (coords == null){
+            Location location = UltimaLocalizacion.ultimaLocalizacion;
+            coords = new Coordenadas(location.getLongitude()+"",location.getLatitude()+"");
+        }
+        Intent intento = new Intent(MainActivity.this,HoraEspecificaActivity.class);
+        intento.putExtra("lon",coords.getLongitud()+"");
+        intento.putExtra("lat",coords.getLatitud()+"");
+        intento.putExtra("pos",posicion);
+        startActivity(intento);
     }
 }

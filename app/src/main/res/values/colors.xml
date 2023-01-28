@@ -8,4 +8,10 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="gris">#6B7071</color>
+    <color name="clr_button">#AEA2EF</color>
+    <color name="clr_background">#232323</color>
+    <color name="clr_nameApp">#F0F0F0</color>
+    <color name="clr_mainApp">#6835F7</color>
+    <color name="grisnihel">#7A9CA4</color>
+    <color name="lista">#1AFFFFFF</color>
 </resources>

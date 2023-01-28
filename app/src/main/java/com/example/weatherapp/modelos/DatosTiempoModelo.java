@@ -1,16 +1,18 @@
-package com.example.weatherapp;
+package com.example.weatherapp.modelos;
 
-public class ListaHorasModelo {
+import android.graphics.Bitmap;
+
+public class DatosTiempoModelo {
 
     private String hora;
     private String temperatura;
-    private String icono;
+    private String imagen;
     private String condicion;
 
-    public ListaHorasModelo(String hora, String temperatura, String icono, String condicion) {
+    public DatosTiempoModelo(String hora, String temperatura, String icono, String condicion) {
         this.hora = hora;
         this.temperatura = temperatura;
-        this.icono = icono;
+        this.imagen = icono;
         this.condicion = condicion;
     }
 
@@ -30,12 +32,12 @@ public class ListaHorasModelo {
         this.temperatura = temperatura;
     }
 
-    public String getIcono() {
-        return icono;
+    public String getImagen() {
+        return imagen;
     }
 
-    public void setIcono(String icono) {
-        this.icono = icono;
+    public void setImagen(String imagen) {
+        this.imagen = imagen;
     }
 
     public String getCondicion() {

@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item android:id="@+id/search_button"
+    <item android:id="@+id/share_button"
         android:title="Compartir"
         android:icon="@drawable/ic_baseline_share_24"
+        app:showAsAction="always"
+        />
+    <item android:id="@+id/logout_button"
+        android:title="Cerrar sesión"
+        android:icon="@drawable/baseline_logout_24"
         app:showAsAction="always"
         />
 

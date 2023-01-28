@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity"
-    android:fillViewport="true"
+    android:fillViewport="true" >
+
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:visibility="gone"
+    android:id="@+id/home"
     >
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -26,6 +33,9 @@
             android:id="@+id/linearLayout"
             android:layout_width="match_parent"
             android:layout_height="53dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:gravity="bottom|center"
             android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -33,19 +43,38 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.025">
 
-            <SearchView
-                android:id="@+id/busqueda"
-                android:layout_width="match_parent"
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="39dp"
+                android:layout_height="35dp"
+                android:translationX="-3dp"
+                android:translationY="-5dp"
+                app:srcCompat="@drawable/baseline_search_24" />
+
+            <AutoCompleteTextView
+                android:id="@+id/autoCompletar"
+                android:layout_width="251dp"
                 android:layout_height="match_parent"
-                android:iconifiedByDefault="false"
-                android:queryHint="Introduzca una ciudad" />
+                android:layout_weight="1"
+                android:backgroundTint="#FFFFFF"
+                android:hint="Buscar localización"
+                app:startIconDrawable="@drawable/baseline_logout_24" />
+
+            <ImageView
+                android:id="@+id/mylocalization"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:translationY="2dp"
+                app:srcCompat="@drawable/baseline_my_location_24" />
 
         </LinearLayout>
 
         <TextView
             android:id="@+id/city"
-            android:layout_width="305dp"
-            android:layout_height="32dp"
+            android:layout_width="337dp"
+            android:layout_height="40dp"
             android:layout_marginTop="20dp"
             android:gravity="center"
             android:text="@string/ciudad"
@@ -56,10 +85,10 @@
 
         <TextView
             android:id="@+id/temp"
-            android:layout_width="341dp"
-            android:layout_height="112dp"
-            android:layout_marginTop="20dp"
-            android:gravity="center|fill_vertical"
+            android:layout_width="347dp"
+            android:layout_height="118dp"
+            android:layout_marginTop="8dp"
+            android:gravity="center|center_horizontal|center_vertical|fill_vertical"
             android:text="@string/_31_c"
             android:textSize="90sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -83,7 +112,7 @@
         <TextView
             android:id="@+id/condicion"
             android:layout_width="148dp"
-            android:layout_height="25dp"
+            android:layout_height="42dp"
             android:layout_marginTop="14dp"
             android:gravity="center"
             android:text="@string/nublado"
@@ -93,43 +122,49 @@
 
         <TextView
             android:id="@+id/bienvenida"
-            android:layout_width="286dp"
-            android:layout_height="25dp"
+            android:layout_width="345dp"
+            android:layout_height="28dp"
             android:layout_above="@+id/recyclerview"
+            android:layout_marginTop="40dp"
+
+
+            android:layout_marginBottom="15dp"
             android:text="@string/el_tiempo_de_hoy"
-
-
             android:textSize="18sp"
             app:layout_constraintBottom_toTopOf="@+id/recyclerview"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.496"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/temp"
-            app:layout_constraintVertical_bias="0.794" />
+            app:layout_constraintVertical_bias="0.512" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_marginStart="40dp"
-            android:layout_marginTop="33dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="50dp"
+            android:layout_marginEnd="15dp"
             android:orientation="horizontal"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/temp"
-            app:layout_constraintVertical_bias="0.461">
+            app:layout_constraintVertical_bias="0.413">
 
         </androidx.recyclerview.widget.RecyclerView>
 
-        <ListView
-            android:id="@+id/listaDias"
-            android:layout_width="229dp"
-            android:layout_height="61dp"
-            android:layout_marginTop="1dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/recyclerview" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/progressBar"
+        android:visibility="visible"
+        android:layout_centerInParent="true"
+        />
+
+</RelativeLayout>
