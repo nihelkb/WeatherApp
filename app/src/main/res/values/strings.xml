@@ -1,0 +1,31 @@
+<resources>
+    <string name="app_name">WeatherApp</string>
+    <string name="introduce_ciudad">introduce_ciudad</string>
+    <string name="lupa">lupa</string>
+    <string name="introduzca_una_ciudad">Introduzca una ciudad</string>
+    <string name="nublado">Nublado</string>
+    <string name="_31_c">31ºC</string>
+    <string name="tiempo">tiempo</string>
+    <string name="el_tiempo_de_hoy">El tiempo de hoy</string>
+    <string name="ciudad">Ciudad</string>
+    <string name="icono_tiempo">icono tiempo</string>
+    <string name="txt_username">Nombre de usuario</string>
+    <string name="txt_password">Contrasena</string>
+    <string name="action_sign_in">Entrar</string>
+    <string name="check_remindMe">Recuerdame</string>
+    <string name="_20_00">20:00</string>
+    <string name="_20_c">20ºC</string>
+    <string name="temperatura">Temperatura</string>
+    <string name="_20_c1">20ºC</string>
+    <string name="sensacion_t_rmica">Sensacion Térmica</string>
+    <string name="precipitaciones">% Precipitaciones</string>
+    <string name="_20_c2">20ºC</string>
+    <string name="_20_c3">20ºC</string>
+    <string name="humedad">Humedad</string>
+    <string name="_20_c4">20ºC</string>
+    <string name="viento">Viento</string>
+    <string name="presi_n">Presión</string>
+    <string name="_20_c5">20ºC</string>
+    <string name="madrid">Madrid</string>
+    <string name="detalles_en_la_hora">Detalles en la hora</string>
+</resources>
